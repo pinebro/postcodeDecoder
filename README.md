@@ -1,7 +1,5 @@
 zipcodeDecoder
 
-author: mm
-
 Dekodiere Postcode/Zielcode der 'Deutschen Post'
 
 Eingegeben werden die Nummern 1 und 0.
