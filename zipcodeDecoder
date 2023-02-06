@@ -1,0 +1,104 @@
+#!/usr/bin/python3
+
+"""
+zipcodeDecoder
+
+author: mm
+
+Dekodiere Postcode/Zielcode der 'Deutschen Post'
+
+Eingegeben werden die Nummern 1 und 0.
+Dabei entspricht die Nummer 1 einem Strich und die Nummer 0 keinem Strich.
+
+Bei falscher Eingabe wird das Programm mit einem ErrorXyz beendet.
+
+Zielcode sind genau 80 bits lang!
+"""
+
+class Postcode:
+    def __init__(self, code):
+        self.code = code
+        self.code = self.code.replace('1', '|')
+        self.code = self.code.replace('0', ' ')
+        if len(code) != 80: raise ValueError()
+        self.entgeldstelle = code[2:6], code[7:11]
+        self.hausnummer = code[12:16], code[17:21], code[22:26]
+        self.strasse = code[27:31], code[32:36], code[37:41]
+        self.postleitzahl = code[42:47], code[48:53], code[54:59], code[60:65], code[66:71] 
+        self.pruefziffer = code[72:77]
+        pass
+    def __str__(self):
+        return f"Postleitzahl: {self.postleitzahl} - Straße: {self.strasse} - Hausnummer: {self.hausnummer}"
+
+    @classmethod
+    def decode4bs(cls, code):
+        """
+        eingabe ist ein string mit vier zeichen
+        ausgabe soll eine integer zahl sein
+        """
+        #Pruefe konsistenz
+        if code.count('0') > 2: raise ValueError()
+        #nummern addieren
+        result = 0
+        if code[0] == '0': result += 8
+        if code[1] == '0': result += 4
+        if code[2] == '0': result += 2
+        if code[3] == '0': result += 1
+        if result == 10: result = 7
+        return result
+
+    @classmethod
+    def decode5bs(cls, code):
+        """
+        eingabe ist ein string mit fuenf zeichen
+        ausgabe soll eine integer zahl sein
+        """
+        #Pruefe konsistenz
+        if code.count('0') != 2: raise ValueError()
+        #nummern addieren
+        result = 0
+        if code[0] == '0': result += 0
+        if code[1] == '0': result += 1
+        if code[2] == '0': result += 2
+        if code[3] == '0': result += 4
+        if code[4] == '0': result += 7
+        return result
+    
+    def decoder(self, ):
+        entgeldstelle = [str(self.decode4bs(i)) for i in self.entgeldstelle][::-1]
+        strassennummer = [str(self.decode4bs(i)) for i in self.strasse][::-1]
+        hausnummer = [str(self.decode4bs(i)) for i in self.hausnummer][::-1]
+        plz = [self.decode5bs(i) for i in self.postleitzahl][::-1]
+        pruefziffer = self.decode5bs(self.pruefziffer)
+        pruefsumme = lambda: 'OK' if (sum(plz)+pruefziffer)%10==0 else '\033[91mNICHT OK\033[0m'
+        pruefsumme = pruefsumme()
+        quersumme = sum(plz)
+        plz = [str(i) for i in plz]
+        output = f"""  \033[91m{self.code}\033[0m
+    
+        Entgelts:       {''.join(entgeldstelle)}
+        Hausnummer:     {''.join(hausnummer)}
+        Straße:         {''.join(strassennummer)}
+        Postleitzahl:   {''.join(plz)}
+        Prüfziffer:     {pruefziffer}
+        PLZ Quersumme:  {quersumme}
+        PLZ Prüfung {pruefsumme}!
+        """
+        return output
+
+if __name__ == "__main__":
+
+    print("""
+    Eingegeben werden die Nummern 1 und 0.\n    Dabei entspricht die Nummer 1 einem Strich und die Nummer 0 keinem Strich.
+    
+    Bei falscher Eingabe wird das Programm mit einem ErrorXyz beendet.
+    
+    Zielcodes sind genau 80 bits lang und beginnen immer mit '| |' und enden mit '|||'.
+
+  -|Entgelts.|--Hausnummer--|----Straße----|-------Postleitzahl----------|Prüfz|-- Bedeutung
+  -|8421.8421|8421.8421.8421|8421.8421.8421|01247.01247.01247.01247.01247|01247|-- Stellenwert """)
+    code = input(": ")
+    if code == '':
+        code = '10111001001111110111101111101111110110111001011100111010101101110101011110011111'
+    mycode = Postcode(code)
+    print(mycode.decoder())
