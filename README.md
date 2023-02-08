@@ -1,4 +1,4 @@
-zipcodeDecoder
+postcodeDecoder
 
 author: mm
 
