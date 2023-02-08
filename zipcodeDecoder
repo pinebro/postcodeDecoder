@@ -16,8 +16,7 @@ Zielcodes sind genau 80 bits lang und beginnen immer mit '| |' und enden mit '||
 class Postcode:
 
     def __init__(self, code):
-        code = code.strip()
-        code = code.strip('0')
+        code = code.strip().strip('0')
         if len(code) != 80:
             print('\n'+'\t\033[95mDie Länge der eingegebenen Zeichenkette ist nicht 80 Zeichen!\033[0m')
             raise ValueError()
@@ -26,7 +25,7 @@ class Postcode:
             if i not in ('1','0'):
                 print('\n'+'\t\033[95mDie Zeichenkette beinhaltet falsche Zeichen!\033[0m')
                 raise ValueError()
-        self.code = code.strip().replace('1', '|').replace('0', ' ')
+        self.code = code.replace('1', '|').replace('0', ' ')
         self.entgelts = code[2:6], code[7:11]
         self.hausnummer = code[12:16], code[17:21], code[22:26]
         self.strasse = code[27:31], code[32:36], code[37:41]
