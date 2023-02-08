@@ -71,7 +71,8 @@ class Postcode:
         if code[4] == '0': result += 7
         return result
     
-    def decoder(self):
+    @property
+    def decoded(self):
         entgelts = int(''.join([str(self.decode4bs(i)) for i in self.entgelts])[::-1])
         strassennummer = int(''.join([str(self.decode4bs(i)) for i in self.strasse])[::-1])
         hausnummer = int(''.join([str(self.decode4bs(i)) for i in self.hausnummer])[::-1])
@@ -102,6 +103,6 @@ if __name__ == "__main__":
         if code == '':
             code = '10111001001111110111101111101111110110111001011100111010101101110101011110011111'
         mycode = Postcode(code)
-        print(mycode.decoder())
+        print(mycode.decoded)
     except:
         print('\n\t\033[96mVersuche es noch einmal!\033[0m')
