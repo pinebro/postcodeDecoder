@@ -17,6 +17,14 @@ class Postcode:
 
     def __init__(self, code):
         code = code.strip().strip('0')
+        # pruefe ob der string mit '101' beginnt und mit '111' endet
+        if (code[:3], code[-3:]) != ('101', '111'):
+            # wenn nicht dann drehe den string und pruefe nochmal
+            code = code[::-1]
+            if (code[:3], code[-3:]) != ('101', '111'):
+                # wenn wieder nicht dann raise ValueError
+                print('\n'+'\t\033[95mEs kann kein Anfang gefunden werden!\033[0m')
+                raise ValueError()
         if len(code) != 80:
             print('\n'+'\t\033[95mDie Länge der eingegebenen Zeichenkette ist nicht 80 Zeichen!\033[0m')
             raise ValueError()
@@ -81,15 +89,20 @@ class Postcode:
         plz = d5bs2int(self.postleitzahl)
         quersumme = sum([self.decode5bs(i) for i in self.postleitzahl])
         pruefziffer = self.decode5bs(self.pruefziffer)
-        sumcheck = 'OK' if sum((quersumme,pruefziffer)) % 10 == 0 else '\033[91mNICHT OK\033[0m'
+        sumcheck = 'OK!' if sum((quersumme,pruefziffer)) % 10 == 0 else 'NICHT OK!'
+        redOrGreen = '\033[92m' if sum((quersumme,pruefziffer)) % 10 == 0 else '\033[91m'
         output = f"""  \033[90m{self.code}\033[0m Zielcode\n
-    Entgelts:       {entgelts:5}
-    Hausnummer:     {hausnummer:5}
-    Straße:         {strassennummer:5}
-    Postleitzahl:   {plz:5}
-    Prüfziffer:     {pruefziffer:5}\n
-    PLZ Quersumme:  {quersumme:5}
-    PLZ Prüfung {sumcheck}!\n"""
+    ┌{'─'*27}┐
+    │ {'Entgelts.:'.ljust(16)}{entgelts:9} │
+    │ {'Hausnummer:'.ljust(16)}{hausnummer:9} │
+    │ {'Straße:'.ljust(16)}{strassennummer:9} │
+    │ {'Postleitzahl:'.ljust(16)}{plz:9} │
+    │ {'Prüfziffer:'.ljust(16)}{pruefziffer:9} │
+    └{'─'*27}┘
+    {redOrGreen}┌{'─'*27}┐
+    │\033[0m {'PLZ Quersumme:'.ljust(16)}{quersumme:9}{redOrGreen} │
+    │\033[0m {'PLZ Prüfung:'.ljust(16)}{redOrGreen}{sumcheck.rjust(9)} │
+    └{'─'*27}┘\033[0m\n"""
         print(output)
         return entgelts, hausnummer, strassennummer, plz, pruefziffer
 
@@ -103,7 +116,8 @@ if __name__ == "__main__":
     try:
         code = input(": ")
         if code == '':
-            code = '10111001001111110111101111101111110110111001011100111010101101110101011110011111'
+            code = '10111001001111110111101111101111110110111001011100111010101101110101011110101111' # pruefsumme nicht ok
+            code = '10111001001111110111101111101111110110111001011100111010101101110101011110011111' # pruefsumme ok
         mycode = Postcode(code)
         print(mycode.decoded)
     except:
