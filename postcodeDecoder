@@ -108,17 +108,17 @@ class Postcode:
 
 if __name__ == "__main__":
 
-    print("""
+    promt = """
     Eingegeben werden die Nummern 1 und 0.\n    Dabei entspricht die Nummer 1 einem Strich und die Nummer 0 keinem Strich.\n
     Zielcodes sind genau 80 bits lang und beginnen immer mit '| |' und enden mit '|||'.\n
   -|Entgelts.|--Hausnummer--|----Straße----|-------Postleitzahl----------|Prüfz|-- Bedeutung
-  -|8421.8421|8421.8421.8421|8421.8421.8421|01247.01247.01247.01247.01247|01247|-- Stellenwert """)
+  -|8421.8421|8421.8421.8421|8421.8421.8421|01247.01247.01247.01247.01247|01247|-- Stellenwert\n: """)
     try:
-        code = input(": ")
+        code = input(promt)
         if code == '':
             code = '10111001001111110111101111101111110110111001011100111010101101110101011110101111' # pruefsumme nicht ok
             code = '10111001001111110111101111101111110110111001011100111010101101110101011110011111' # pruefsumme ok
-        mycode = Postcode(code)
-        print(mycode.decoded)
+        code = Postcode(code)
+        print(code.decoded)
     except:
         print('\n\t\033[96mVersuche es noch einmal!\033[0m')
